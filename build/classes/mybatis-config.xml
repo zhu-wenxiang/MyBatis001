@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+<!-- 与MyBatis数据库的连接配置 -->
+	<!--扫描配置文件，要放在datasource配置的前面  -->
+	<properties resource="jdbc.properties"/>
+	<!-- 配置MyBatis的log实现为log4j -->
+	<settings>
+		<setting name="logImpl" value="log4j"/>
+	</settings>
+	<!-- 为包取别名 -->
+	<typeAliases>
+		<package name="pojo"/>	
+	</typeAliases>
+	<environments default="development">
+		<environment id="development">
+			<!-- 配置事务管理采用JDBC -->
+			<transactionManager type="JDBC"/>
+			<!-- 使用MyBatis的数据源POOLED，JNDI:基于Tomcat的数据源 -->
+			<dataSource type="POOLED">
+				<property name="driver" value="${driver}"/>
+				<property name="url" value="${url}"/>
+				<property name="username" value="${username}"/>
+				<property name="password" value="${password}"/>
+			</dataSource>
+		</environment>
+	</environments>
+	<mappers>
+		<mapper resource="dao/UserMapper.xml"/>
+		<mapper resource="dao/RoleDao.xml"/>
+	</mappers>
+</configuration>

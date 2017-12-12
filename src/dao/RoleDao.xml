@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "mybatis-3-mapper.dtd" >
+<mapper namespace="dao.RoleDao">
+
+	<insert id="add" parameterType="Role">
+		insert into role(roleCode,roleName) values (#{roleCode},#{roleName})
+	</insert>
+	
+	<select id="getRoleList" resultType="Role">
+		select * from role	
+	</select>
+	
+	<update id="update" parameterType="Role">
+		update role set roleCode=#{roleCode},roleName=#{roleName} where id=#{id}
+	</update>
+	
+	<delete id="delete" parameterType="Role">
+		delete from role where id=#{id}	
+	</delete>
+	
+	<select id="getRoleListByPara" parameterType="Role" resultType="Role">
+		select from role
+		
+		<!-- choose的用法,类似于Java中的switch语句，只要一个符合，就不再进入其他判断 -->
+		<where>
+			<choose>
+				<when test="roleCode!=null">
+					and roleCode=#{roleCode}	
+				</when>
+				<when test="roleName!=null">
+					and roleName=#{roleName}	
+				</when>
+				<otherwise></otherwise>
+			</choose>	
+		</where>
+		
+		<!-- trim作用和where类似，大多数时候开发使用trim，可以只能去除and或者or -->	
+		<trim prefix="where" suffixOverrides="and|or">
+			<if test="roleName!=null">
+				and roleCode like CONCAT ('%',#{roleName},'%')
+			</if>
+		</trim>
+		<where>
+			<if test="roleCode!=null">
+			<!-- and会被智能去除 ,使用CONCAT防SQL注入-->
+				and	roleCode like CONCAT ('%',#{roleCode},'%')
+			</if>
+		</where>
+
+	</select>
+
+</mapper>

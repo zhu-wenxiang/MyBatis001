@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dao.UserMapper">
+	<select id="count" resultType="int">
+		select count(1)	from user
+	</select>
+
+	<insert id="add" parameterType="User">
+		insert into user(userCode,userName,userPassword) values (#{userCode},#{userName},#{userPassword})
+	</insert>
+
+	<update id="update" parameterType="User">
+		update user set userCode=#{userCode},userName=#{userName},userPassword=#{userPassword} where id=#{id}
+	</update>
+	
+	<resultMap type="User" id="userListMap">
+		<result property="id" column="id"/>	
+		<result property="userCode" column="userCode"/>
+		<result property="userName" column="userName"/>
+		<result property="roleName" column="roleName"/>
+		<result property="roleId" column="roleId"/>
+	</resultMap>
+	
+	<!-- property对应的是pojo中的属性 ,column对应的是从数据库中查出来的字段名-->
+	<resultMap type="User" id="UserMap1">
+		<result property="id" column="id"/>
+		<association property="role" javaType="Role">
+			<result property="id" column="id"/>	
+			<result property="roleName" column="roleName"/>
+			<result property="roleCode" column="roleCode"/>
+		</association>
+	</resultMap>
+
+	<select id="getUserListByRoleId" parameterType="Role" resultMap="userListMap">
+		select u.*,r.roleName from user as u,role as r where u.roleId=r.id and u.roleId=#{id}
+	</select>
+	
+	<!-- collection的使用方法 -->
+	<resultMap type="User" id="UserMap2">
+		<result property="id" column="userId"/>
+		<collection property="addressList" ofType="Address">
+			<result property="id" column="r_id"/>
+			<result property="addressContent" column="addressContent"/>
+		</collection>
+	</resultMap>
+	
+	<!-- update语句使用SET标签进行拼接 -->
+	<update id="updateUserInfo" parameterType="User">
+		update user
+		<set>
+			<if test="userCode!=null">
+				userCode=#{userCode}	
+			</if>	
+			<if test="userName!=null">
+				userName=#{userName}	
+			</if>
+			<if test="userPassword!=null">
+				userPassword=#{userPassword}	
+			</if>
+			<if test="roleId!=null">
+				roleId=#{roleId}	
+			</if>
+		</set>
+		where id=#{id}
+		<!-- 也可以使用trim -->
+		<trim prefix="set" suffixOverrides=",">
+			<if test="userCode!=null and userCode!=''">
+				userCode=#{userCode}	
+			</if>	
+			<if test="userPassword!=null">
+				userPassword=#{userPassword}
+			</if>	
+		</trim>
+		where id=#{id}
+	</update>
+</mapper>
